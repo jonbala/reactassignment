@@ -1,0 +1,21 @@
+.addUserMain {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+input {
+    width: 20em;
+    height: 32px;
+    margin: 20px 10px;
+    padding-left: 10px;
+    border: none;
+    filter: drop-shadow(0 0 0.50rem grey);
+}
+
+button {
+    width: 10em;
+    height: 32px;
+    border: none;
+    filter: drop-shadow(0 0 0.50rem grey);
+}

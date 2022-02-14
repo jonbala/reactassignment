@@ -1,46 +1,88 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { User } from "./components/User/User";
+import { AddUser } from "./components/AddUser/AddUser";
+import './styles.css';
+import Main from "./Main";
 
-import NewExpense from './components/NewExpense/NewExpense';
-import Expenses from './components/Expenses/Expenses';
+ const App = () => {
+  const [users, setUsers] = useState([]);
 
-const DUMMY_EXPENSES = [
-  {
-    id: 'e1',
-    title: 'Toilet Paper',
-    amount: 94.12,
-    date: new Date(2020, 7, 14),
-  },
-  { id: 'e2', title: 'New TV', amount: 799.49, date: new Date(2021, 2, 12) },
-  {
-    id: 'e3',
-    title: 'Car Insurance',
-    amount: 294.67,
-    date: new Date(2021, 2, 28),
-  },
-  {
-    id: 'e4',
-    title: 'New Desk (Wooden)',
-    amount: 450,
-    date: new Date(2021, 5, 12),
-  },
-];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-const App = () => {
-  const [expenses, setExpenses] = useState(DUMMY_EXPENSES);
+  const fetchData = async () => {
+    await fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.log(error));
+  };
 
-  const addExpenseHandler = (expense) => {
-    setExpenses((prevExpenses) => {
-      return [expense, ...prevExpenses];
-    });
+  const onAdd = async (name, email, street, company) => {
+    await fetch("https://jsonplaceholder.typicode.com/users", {
+      method: "POST",
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        street: street,
+        company: company
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    })
+      .then((response) => {
+        if (response.status !== 201) {
+          return;
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        setUsers((users) => [...users, data]);
+      })
+      .catch((error) => console.log(error));
   };
 
 
+  const onDelete = async (id) => {
+    await fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+      method: "DELETE"
+    })
+      .then((response) => {
+        if (response.status !== 200) {
+          return;
+        } else {
+          setUsers(
+            users.filter((user) => {
+              return user.id !== id;
+            })
+          );
+        }
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div>
-      <NewExpense onAddExpense={addExpenseHandler} />
-      <Expenses items={expenses} />
+	 	<Main/>
+		<div className="mainText">
+			<h1>Users</h1>
+		</div>
+      		<AddUser onAdd={onAdd} />
+      			{users.map((user) => (
+        		<User
+          			id={user.id}
+         			  key={user.id}
+          			name={user.name}
+          			email={user.email}
+                street={user.street}
+                company={user.company}
+          			onDelete={onDelete}
+        		/>
+     		 ))}
     </div>
   );
-};
+}
 
 export default App;
