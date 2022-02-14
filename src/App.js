@@ -27,9 +27,7 @@ import Main from "./Main";
         street: street,
         company: company
       }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8"
-      }
+      
     })
       .then((response) => {
         if (response.status !== 201) {
